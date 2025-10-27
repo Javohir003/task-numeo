@@ -59,7 +59,7 @@ export const GithubProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(true);
       setError(null);
 
-      const userRes = await fetch(`https://api.github.com/users/${username}`);
+      const userRes = await fetch(`${process.env.NEXT_PUBLIC_GITHUB_TOKEN}/users/${username}`);
 
       if (userRes.status === 403) {
         toast.warning("GitHub API limit qolmadi! Keyinroq urinib kuring");
@@ -79,7 +79,7 @@ export const GithubProvider: React.FC<{ children: React.ReactNode }> = ({
       const userData = await userRes.json();
 
       const repoRes = await fetch(
-        `https://api.github.com/users/${username}/repos?per_page=7&page=1`
+        `${process.env.NEXT_PUBLIC_GITHUB_TOKEN}/users/${username}/repos?per_page=7&page=1`
       );
 
       if (!repoRes.ok) {
@@ -108,7 +108,7 @@ export const GithubProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const nextPage = page + 1;
       const res = await fetch(
-        `https://api.github.com/users/${currentUsername.current}/repos?page=${nextPage}&per_page=7`
+        `${process.env.NEXT_PUBLIC_GITHUB_TOKEN}/users/${currentUsername.current}/repos?page=${nextPage}&per_page=7`
       );
       const newRepos = await res.json();
 
