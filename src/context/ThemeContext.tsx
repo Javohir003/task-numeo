@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 
 interface ThemeContextProps {
@@ -12,6 +12,17 @@ const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mode, setMode] = useState<"light" | "dark">("light");
+
+  // 🔹 Sahifa yuklanganda localStorage'dan o‘qish
+  useEffect(() => {
+    const savedMode = localStorage.getItem("themeMode") as "light" | "dark" | null;
+    if (savedMode) setMode(savedMode);
+  }, []);
+
+  // 🔹 Theme o‘zgarsa localStorage’ga yozish
+  useEffect(() => {
+    localStorage.setItem("themeMode", mode);
+  }, [mode]);
 
   const toggleTheme = () => {
     setMode((prev) => (prev === "light" ? "dark" : "light"));
@@ -42,7 +53,7 @@ export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({ c
   return (
     <ThemeContext.Provider value={{ mode, toggleTheme }}>
       <ThemeProvider theme={theme}>
-        <CssBaseline /> {/* MUI uchun umumiy reset */}
+        <CssBaseline /> {/* Global reset for MUI */}
         {children}
       </ThemeProvider>
     </ThemeContext.Provider>
@@ -51,6 +62,7 @@ export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
 export const useThemeContext = () => {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error("useThemeContext must be used within a CustomThemeProvider");
+  if (!context)
+    throw new Error("useThemeContext must be used within a CustomThemeProvider");
   return context;
 };
