@@ -4,13 +4,12 @@
 html,
 body {
   max-width: 100vw;
-  font-family: inherit !important; /* yoki bo'sh qoldirish */
-}
-
-body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: inherit !important; /* yoki bo'sh qoldirish */
+  height: 100vh;
 }
+
 
 * {
   box-sizing: border-box;

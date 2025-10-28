@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 
 interface ThemeContextProps {
@@ -11,21 +11,19 @@ interface ThemeContextProps {
 const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [mode, setMode] = useState<"light" | "dark">("light");
-
-  // 🔹 Sahifa yuklanganda localStorage'dan o‘qish
-  useEffect(() => {
-    const savedMode = localStorage.getItem("themeMode") as "light" | "dark" | null;
-    if (savedMode) setMode(savedMode);
-  }, []);
-
-  // 🔹 Theme o‘zgarsa localStorage’ga yozish
-  useEffect(() => {
-    localStorage.setItem("themeMode", mode);
-  }, [mode]);
+  const [mode, setMode] = useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("themeMode") as "light" | "dark") || "light";
+    }
+    return "light";
+  });
 
   const toggleTheme = () => {
-    setMode((prev) => (prev === "light" ? "dark" : "light"));
+    setMode((prev) => {
+      const next = prev === "light" ? "dark" : "light";
+      localStorage.setItem("themeMode", next);
+      return next;
+    });
   };
 
   const theme = useMemo(
@@ -53,7 +51,7 @@ export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({ c
   return (
     <ThemeContext.Provider value={{ mode, toggleTheme }}>
       <ThemeProvider theme={theme}>
-        <CssBaseline /> {/* Global reset for MUI */}
+        <CssBaseline />
         {children}
       </ThemeProvider>
     </ThemeContext.Provider>
