@@ -35,3 +35,8 @@ Easily search for any GitHub profile and view their repositories, followers, and
 ### 1️⃣ Clone the repository
 ```bash
 git clone https://github.com/Javohir003/task-numeo.git
+
+ 2️⃣ Create environment variable file NEXT_PUBLIC_GITHUB_API=https://api.github.com (Optionally, if you have a GitHub personal token, you can add:)
+ 3️⃣ Install dependencies npm install
+ 4️⃣ Run the development server npm run dev
+ 5️⃣ Open the app in your browser http://localhost:3000
