@@ -2,7 +2,7 @@
 
 import { Box, Button, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGithub } from "../context/GithubContext";
 import { useThemeContext } from "../context/ThemeContext";
 
@@ -11,8 +11,30 @@ export default function SearchBar() {
   const { fetchGithubUser, error, setError } = useGithub();
   const { mode } = useThemeContext();
 
-  const handleSearch = () => {
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 🔹 Debounce orqali fetch qilish
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUsername(value);
     setError(null);
+
+    // Avvalgi timeoutni bekor qilish
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    // Yangi timeout qo‘yish — 500 ms kutish
+    debounceRef.current = setTimeout(() => {
+      if (value.trim() === "") {
+        fetchGithubUser(""); // agar input bo‘sh bo‘lsa — tozalash
+      } else {
+        fetchGithubUser(value.trim());
+      }
+    }, 500);
+  };
+
+  // 🔹 Enter yoki Search bosilganda darhol qidirish
+  const handleSearch = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (username.trim()) fetchGithubUser(username.trim());
   };
 
@@ -30,13 +52,11 @@ export default function SearchBar() {
       <Box
         sx={{
           position: "relative",
-          left: 0,
-          top: 0,
           display: "flex",
           width: "100%",
-          paddingY: "5px",
+          py: "5px",
           boxShadow: "0px 0px 3px #80808065",
-          paddingX: "10px",
+          px: "10px",
           borderRadius: "8px",
           alignItems: "center",
           backgroundColor: mode === "light" ? "#f6f8ff" : "#1E2A47",
@@ -56,14 +76,10 @@ export default function SearchBar() {
             color: mode === "light" ? "#4b6a9b" : "white",
           }}
           value={username}
-          onChange={(e) => {
-            const value = e.target.value;
-            setUsername(value);
-            setError(null);
-            value.trim() === "" ? fetchGithubUser("") : fetchGithubUser(value)
-          }}
+          onChange={handleInputChange}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
         />
+
         <Typography
           variant="inherit"
           sx={{
@@ -75,14 +91,13 @@ export default function SearchBar() {
         >
           {error ? <span style={{ color: "red" }}>{error}</span> : ""}
         </Typography>
+
         <Button
           sx={{
             px: { xs: "20px", sm: "35px" },
             py: { xs: "5px", sm: "10px" },
             backgroundColor: "#0079FF",
-            "&:hover": {
-              backgroundColor: "#3399FF", // hoverda biroz oqar ko‘k
-            },
+            "&:hover": { backgroundColor: "#3399FF" },
             textTransform: "none",
             borderRadius: "8px",
             fontSize: { xs: "12px", sm: "15px" },
