@@ -26,6 +26,8 @@ const Repositories: React.FC = () => {
     [loading, hasMore, loadMoreRepos]
   );
 
+  
+
   return (
     <Box display="flex" flexDirection="column" gap={2}>
       {repos.map((r, index) => {

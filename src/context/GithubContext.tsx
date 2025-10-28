@@ -58,8 +58,11 @@ export const GithubProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setLoading(true);
       setError(null);
+      currentUsername.current = username;
 
-      const userRes = await fetch(`${process.env.NEXT_PUBLIC_GITHUB_TOKEN}/users/${username}`);
+      const userRes = await fetch(
+        `${process.env.NEXT_PUBLIC_GITHUB_TOKEN}/users/${username}`
+      );
 
       if (userRes.status === 403) {
         toast.warning("GitHub API limit qolmadi! Keyinroq urinib kuring");
